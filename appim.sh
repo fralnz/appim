@@ -39,6 +39,7 @@ uninstall(){
 geticon(){
   cd squashfs-root
   count=`ls -1 *icon.png 2>/dev/null | wc -l`
+  countsvg=`ls -1 *.svg 2>/dev/null | wc -l`
   cd ..
 
   if [[ -f squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png ]]; then
@@ -46,6 +47,9 @@ geticon(){
     echo "[OK] Icon found"
   elif [[ $count != 0 ]]; then
     cp squashfs-root/*icon.png $icondir/$filename.png
+    echo "[OK] Icon found"
+  elif [[ $countsvg != 0 ]]; then
+    cp squashfs-root/*.svg $icondir/$filename.png
     echo "[OK] Icon found"
   else
     echo "[WARN] Icon not found"
