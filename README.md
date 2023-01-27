@@ -16,7 +16,7 @@ sudo chmod +x /usr/local/bin/appim
 | -i   | Installs the appimage   |
 | -u   | Uninstalls the appimage |
 
-Note: The name of the desktop entry will be the name of the AppImage, so if you want to rename the application edit the file of the AppImage before installing it.
+**Note**: The name of the desktop entry will be the name of the AppImage, so if you want to rename the application edit the file of the AppImage before installing it.
 
 **Example**:
 
