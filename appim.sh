@@ -30,6 +30,8 @@ uninstall(){
   echo "removed appimage"
   rm $HOME/.local/share/applications/$desktopentry
   echo "removed desktop entry"
+  rm $HOME/.local/share/icons/filename.png
+  echo "removed icon"
   echo "$filename uninstalled"
   exit 0
 }
@@ -52,6 +54,7 @@ then
 fi
 
 # AppImage extract
+chmod +x $file           #makes the file executable
 cp $file $tempdir
 cd $tempdir
 ./$filename --appimage-extract
