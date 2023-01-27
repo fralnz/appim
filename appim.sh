@@ -1,4 +1,6 @@
 #!/bin/bash
+# Made by: WalkingGarbage (https://github.com/WalkingGarbage/)
+# Any feedback is appreciated
 
 if [[ $1 != -* ]]
 then
@@ -38,12 +40,12 @@ uninstall(){
 
 geticon(){
   cd squashfs-root
-  counticon=`ls -1 *icon.png 2>/dev/null | wc -l`
-  countsvg=`ls -1 *.svg 2>/dev/null | wc -l`
-  countpng=`ls -1 *.png 2>/dev/null | wc -l`
+  counticon=`ls -1 *icon.png 2>/dev/null | wc -l`      #count the number of images that have icon in the name 
+  countsvg=`ls -1 *.svg 2>/dev/null | wc -l`           #count the number of images in the root directory (png)
+  countpng=`ls -1 *.png 2>/dev/null | wc -l`           #count the number of images in the root directory (svg)
   cd ..
 
-  if [[ -f squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png ]]; then
+  if [[ -f squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png ]]; then              #most common place for icons
     cp squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png $icondir/$filename.png
     echo "[OK] Icon found"
   elif [[ $counticon != 0 ]]; then
@@ -58,9 +60,10 @@ geticon(){
   else
     cd squashfs-root
     read -n1 -p "[WARN] Icon not found: do you want to manually select it? [y/N]" select
+    echo ""           #empty line
     case $select in
-      y|Y) icon=$(fzf); cp $icon $icondir/$filename.png;;
-      *) echo "Missing icon";;
+      y|Y) icon=$(fzf); cp $icon $icondir/$filename.png; echo "[OK] Icon selected";;
+      *) echo "[WARN] Missing icon";;
     esac
   fi
 }
@@ -103,7 +106,7 @@ echo "Icon=$icondir/$filename.png" >> $desktopentry
 
 echo "[OK] Desktop entry created"
 
-mv $desktopentry $HOME/.local/share/applications
+mv $desktopentry $HOME/.local/share/applications    #Move the desktop entry
 
 echo "[OK] Moved desktop entry"
 # cleanup
