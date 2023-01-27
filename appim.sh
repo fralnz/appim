@@ -13,7 +13,12 @@ file=$2
 filename=$(basename $file)
 filenameonly=$(basename $file .AppImage)
 desktopentry="$filenameonly.desktop"
-tempdir="$HOME/.cache/appim"
+if [[ ! -z "$XDG_CACHE_HOME" ]]
+then
+  tempdir="$XDG_CACHE_HOME/appim"
+else
+  tempdir="$HOME/.cache"
+fi
 appdir="$HOME/Applications"
 icondir="$HOME/.local/share/icons"
 
@@ -70,20 +75,7 @@ geticon(){
 
 install(){
 # directory setup
-if [ ! -d $tempdir ]    #checks if the temp directory exists
-then
-  mkdir -p $tempdir
-fi
-
-if [ ! -d $appdir ]     #checks if the Applications directory exists
-then
-  mkdir -p $appdir
-fi
-
-if [ ! -d $icondir ]     #checks if the icons directory exists
-then
-  mkdir -p $icondir
-fi
+mkdir -p $tempdir $appdir $icondir
 
 # AppImage extract
 chmod +x $file           #makes the file executable
@@ -97,12 +89,13 @@ echo "[OK] Moved AppImage"
 geticon
 
 # .desktop file creation
-touch $filenameonly.desktop
-echo "[Desktop Entry]" >> $desktopentry
-echo "Type=Application" >> $desktopentry
-echo "Name=$filenameonly" >> $desktopentry
-echo "Exec=$appdir/$filename" >> $desktopentry
-echo "Icon=$icondir/$filename.png" >> $desktopentry
+cat << EOF > $desktopentry
+[Desktop Entry]
+Type=Application
+Name=$filenameonly
+Exec=$appdir/$filename
+Icon=$icondir/$filename.png
+EOF
 
 echo "[OK] Desktop entry created"
 
