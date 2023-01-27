@@ -49,14 +49,19 @@ geticon(){
   elif [[ $counticon != 0 ]]; then
     cp squashfs-root/*icon.png $icondir/$filename.png
     echo "[OK] Icon found"
-  elif [[ $countpng != 0 ]]; then
+  elif [[ $countpng == 1 ]]; then
     cp squashfs-root/*.png $icondir/$filename.png
     echo "[OK] Icon found"
-  elif [[ $countsvg != 0 ]]; then
+  elif [[ $countsvg == 1 ]]; then
     cp squashfs-root/*.svg $icondir/$filename.png
     echo "[OK] Icon found"
   else
-    echo "[WARN] Icon not found"
+    cd squashfs-root
+    read -n1 -p "[WARN] Icon not found: do you want to manually select it? [y/N]" select
+    case $select in
+      y|Y) icon=$(fzf); cp $icon $icondir/$filename.png;;
+      *) echo "Missing icon";;
+    esac
   fi
 }
 

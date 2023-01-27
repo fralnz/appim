@@ -1,6 +1,6 @@
 # appim
 
-A lightweight tool that lets you install and uninstall appimages
+A lightweight cli tool that lets you install and uninstall appimages.
 
 ## Install
 
@@ -8,6 +8,10 @@ A lightweight tool that lets you install and uninstall appimages
 sudo curl https://raw.githubusercontent.com/WalkingGarbage/appim/main/appim.sh > /usr/local/bin/appim
 sudo chmod +x /usr/local/bin/appim 
 ```
+
+## Dependencies
+
+**Optional**: `fzf` for file selection in case appim can't find the application icon.
 
 ## Usage
 
@@ -42,7 +46,3 @@ In case you want to manually edit something:
 - **Icons**: `$HOME/.local/share/icons`
 
 - **temp** (gets automatically deleted): `$HOME/.cache/appim`
-
-
-
-
