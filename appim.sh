@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ $1 != -* ]]
+then
+  echo "Options: [-i] [-u] <file name>"
+  exit 0
+fi
+
 # setup variables
 file=$2
 filename=$(basename $file)
@@ -74,6 +80,9 @@ while getopts 'iu' OPTION; do
       ;;
     u)
       uninstall
+      ;;
+    *)
+      echo "Options: [-i] [-u] <file name>"
       ;;
   esac
 done
