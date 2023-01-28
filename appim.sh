@@ -4,7 +4,7 @@
 
 if [[ $1 != -* ]]
 then
-  echo "Options: [-i] [-u] <file name>"
+  echo "Options: [-i,-s] [-u,-r] <file name>"
   exit 0
 fi
 
@@ -13,8 +13,7 @@ file=$2
 filename=$(basename $file)
 filenameonly=$(basename $file .AppImage)
 desktopentry="$filenameonly.desktop"
-if [[ ! -z "$XDG_CACHE_HOME" ]]
-then
+if [[ ! -z "$XDG_CACHE_HOME" ]]; then
   tempdir="$XDG_CACHE_HOME/appim"
 else
   tempdir="$HOME/.cache"
@@ -109,16 +108,16 @@ echo "[OK] Cache cleared"
 echo "[DONE] AppImage installed"
 }
 
-while getopts 'iu' OPTION; do
+while getopts 'iusr' OPTION; do
   case "$OPTION" in
-    i)
+    i|s)
       install
       ;;
-    u)
+    u|r)
       uninstall
       ;;
     *)
-      echo "Options: [-i] [-u] <file name>"
+      echo "Options: [-i,-s] [-u,-r] <file name>"
       ;;
   esac
 done
