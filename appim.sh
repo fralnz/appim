@@ -23,7 +23,7 @@ icondir="$HOME/.local/share/icons"
 
 echo "Argument: $file"    #prints the file name
 
-if [[ $file == *.AppImage ]]    #checks if the file is an AppImage
+if [[ $file == *.AppImage || $file == *.appimage ]]    #checks if the file is an AppImage
 then
   echo "[OK] AppImage recognized"
 else
