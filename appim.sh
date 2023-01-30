@@ -10,8 +10,8 @@ fi
 
 # setup variables
 file=$2
-filename=$(basename $file)
-filenameonly=$(basename $file .AppImage)
+filename=$(basename "$file")
+filenameonly=$(basename "$file" .AppImage)
 desktopentry="$filenameonly.desktop"
 if [[ ! -z "$XDG_CACHE_HOME" ]]; then
   tempdir="$XDG_CACHE_HOME/appim"
@@ -21,22 +21,36 @@ fi
 appdir="$HOME/Applications"
 icondir="$HOME/.local/share/icons"
 
-echo "Argument: $file"    #prints the file name
+checkappimage(){
+  echo "Argument: $file"    #prints the file name
 
-if [[ $file == *.AppImage || $file == *.appimage ]]    #checks if the file is an AppImage
-then
-  echo "[OK] AppImage recognized"
-else
-  echo "[ERR] The argument is NOT an appimage"
-  exit 0
-fi
+  if [[ $file == *.AppImage || $file == *.appimage ]]    #checks if the file is an AppImage
+  then
+    echo "[OK] AppImage recognized"
+  else
+    echo "[ERR] The argument is NOT an appimage"
+    exit 0
+  fi
+}
+
+update(){
+  sudo curl https://raw.githubusercontent.com/WalkingGarbage/appim/main/appim.sh > /usr/local/bin/appim
+  sudo chmod +x /usr/local/bin/appim 
+}
+
+list(){
+  printf "List of installed AppImages:\n\n"
+  cd "$appdir"
+  ls | egrep '\.AppImage$|\.appimage$'
+}
 
 uninstall(){
-  rm $appdir/$filename
+  checkappimage
+  rm "$appdir"/"$filename"
   echo "removed appimage"
-  rm $HOME/.local/share/applications/$desktopentry
+  rm "$HOME"/.local/share/applications/"$desktopentry"
   echo "removed desktop entry"
-  rm $HOME/.local/share/icons/$filename.png
+  rm "$HOME"/.local/share/icons/"$filename".png
   echo "removed icon"
   echo "$filename uninstalled"
   exit 0
@@ -49,46 +63,48 @@ geticon(){
   countpng=`ls -1 *.png 2>/dev/null | wc -l`           #count the number of images in the root directory (svg)
   cd ..
 
-  if [[ -f squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png ]]; then              #most common place for icons
-    cp squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png $icondir/$filename.png
+  if [[ -f "squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png" ]]; then              #most common place for icons
+    cp squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png "$icondir"/"$filename".png
     echo "[OK] Icon found"
   elif [[ $counticon != 0 ]]; then
-    cp squashfs-root/*icon.png $icondir/$filename.png
+    cp squashfs-root/*icon.png "$icondir"/"$filename".png
     echo "[OK] Icon found"
   elif [[ $countpng == 1 ]]; then
-    cp squashfs-root/*.png $icondir/$filename.png
+    cp squashfs-root/*.png "$icondir"/"$filename".png
     echo "[OK] Icon found"
   elif [[ $countsvg == 1 ]]; then
-    cp squashfs-root/*.svg $icondir/$filename.png
+    cp squashfs-root/*.svg "$icondir"/"$filename".png
     echo "[OK] Icon found"
   else
     cd squashfs-root
     read -n1 -p "[WARN] Icon not found: do you want to manually select it? [y/N]" select
     echo ""           #empty line
     case $select in
-      y|Y) icon=$(fzf); cp $icon $icondir/$filename.png; echo "[OK] Icon selected";;
+      y|Y) icon=$(fzf); cp "$icon" "$icondir"/"$filename".png; echo "[OK] Icon selected";;
       *) echo "[WARN] Missing icon";;
     esac
   fi
 }
 
 install(){
+
+checkappimage
 # directory setup
-mkdir -p $tempdir $appdir $icondir
+mkdir -p "$tempdir" "$appdir" "$icondir"
 
 # AppImage extract
-chmod +x $file           #makes the file executable
-cp $file $tempdir
-cd $tempdir
-./$filename --appimage-extract &>/dev/null
+chmod +x "$file"           #makes the file executable
+cp "$file" "$tempdir"
+cd "$tempdir"
+./"$filename" --appimage-extract &>/dev/null
 echo "[OK] AppImage extracted"
 # Icon copy
-mv $filename $appdir
+mv "$filename" "$appdir"
 echo "[OK] Moved AppImage"
 geticon
 
 # .desktop file creation
-cat << EOF > $desktopentry
+cat << EOF > "$desktopentry"
 [Desktop Entry]
 Type=Application
 Name=$filenameonly
@@ -98,23 +114,29 @@ EOF
 
 echo "[OK] Desktop entry created"
 
-mv $desktopentry $HOME/.local/share/applications    #Move the desktop entry
+mv "$desktopentry" "$HOME"/.local/share/applications    #Move the desktop entry
 
 echo "[OK] Moved desktop entry"
 # cleanup
-rm -rf $tempdir
+rm -rf "$tempdir"
 echo "[OK] Cache cleared"
 
 echo "[DONE] AppImage installed"
 }
 
-while getopts 'iusr' OPTION; do
+while getopts 'iusrl' OPTION; do
   case "$OPTION" in
     i|s)
       install
       ;;
-    u|r)
+    r)
       uninstall
+      ;;
+    l)
+      list
+      ;;
+    u)
+      update
       ;;
     *)
       echo "Options: [-i,-s] [-u,-r] <file name>"

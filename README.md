@@ -15,11 +15,12 @@ sudo chmod +x /usr/local/bin/appim
 
 ## Usage
 
-| Flag | Description             |
-| ---- | ----------------------- |
-| -i   | Installs the appimage   |
-| -u   | Uninstalls the appimage |
-
+| Flag  | Description               |
+| ----- | ------------------------- |
+| -i,-s | Installs the appimage     |
+| -r    | Uninstalls the appimage   |
+| -l    | Lists installed appimages |
+| -u    | Updates appim             |
 
 **Note**: The name of the desktop entry will be the name of the AppImage, so if you want to rename the application edit the name of the file before installing it.
 
