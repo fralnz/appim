@@ -40,7 +40,7 @@ update(){
 
 list(){
   printf "List of installed AppImages:\n\n"
-  cd "$appdir"
+  cd "$appdir" || echo "[ERR] Can't find $HOME/Applications"
   ls | egrep '\.AppImage$|\.appimage$'
 }
 
@@ -95,7 +95,7 @@ mkdir -p "$tempdir" "$appdir" "$icondir"
 # AppImage extract
 chmod +x "$file"           #makes the file executable
 cp "$file" "$tempdir"
-cd "$tempdir"
+cd "$tempdir" || echo "[ERR] Can't find $tempdir"
 ./"$filename" --appimage-extract &>/dev/null
 echo "[OK] AppImage extracted"
 # Icon copy
