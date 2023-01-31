@@ -8,6 +8,18 @@ then
   exit 0
 fi
 
+# setup colors
+BGREEN='\033[1;32m'
+BBLUE='\033[1;34m'
+BRED='\033[1;31m'
+BYELLOW='\033[1;33m'
+BWHITE='\033[1;37m'
+NC='\033[0m'
+OK="${BWHITE}[${NC}${BGREEN}OK${NC}${BWHITE}]${NC}"
+ERR="${BWHITE}[${NC}${BRED}ERR${NC}${BWHITE}]${NC}"
+WARN="${BWHITE}[${NC}${BYELLOW}WARN${NC}${BWHITE}]${NC}"
+DONE="${BWHITE}[${NC}${BBLUE}DONE${NC}${BWHITE}]${NC}"
+
 # setup variables
 file=$2
 filename=$(basename "$file")
@@ -22,37 +34,32 @@ appdir="$HOME/Applications"
 icondir="$HOME/.local/share/icons"
 
 checkappimage(){
-  echo "Argument: $file"    #prints the file name
-
   if [[ $file == *.AppImage || $file == *.appimage ]]    #checks if the file is an AppImage
   then
-    echo "[OK] AppImage recognized"
+    echo -e "${OK} AppImage recognized"
   else
-    echo "[ERR] The argument is NOT an appimage"
+    echo -e "${ERR} The argument is NOT an appimage"
     exit 0
   fi
 }
 
 update(){
-  sudo curl https://raw.githubusercontent.com/WalkingGarbage/appim/main/appim.sh > /usr/local/bin/appim
-  sudo chmod +x /usr/local/bin/appim 
+  sudo curl https://raw.githubusercontent.com/WalkingGarbage/appim/main/appim.sh > /usr/local/bin/appim && echo -e "${OK} Update downloaded" || echo -e "${ERR} Couldn't download update"
+  sudo chmod +x /usr/local/bin/appim && echo -e "${DONE} Update completed"
 }
 
 list(){
   printf "List of installed AppImages:\n\n"
-  cd "$appdir" || echo "[ERR] Can't find $HOME/Applications"
+  cd "$appdir" || echo -e "${ERR} Can't find $HOME/Applications"
   ls | egrep '\.AppImage$|\.appimage$'
 }
 
 uninstall(){
   checkappimage
-  rm "$appdir"/"$filename"
-  echo "removed appimage"
-  rm "$HOME"/.local/share/applications/"$desktopentry"
-  echo "removed desktop entry"
-  rm "$HOME"/.local/share/icons/"$filename".png
-  echo "removed icon"
-  echo "$filename uninstalled"
+  rm "$appdir"/"$filename" &>/dev/null && echo -e "${OK} Removed appimage" || echo -e "${ERR} Can't find appimage"
+  rm "$HOME"/.local/share/applications/"$desktopentry" &>/dev/null && echo -e "${OK} Removed desktop entry" || echo -e "${ERR} Can't find desktop entry"
+  rm "$HOME"/.local/share/icons/"$filename".png &>/dev/null && echo -e "${OK} Removed icon" || echo -e "${ERR} Can't find icon"
+  echo -e "${DONE} $filename uninstalled"
   exit 0
 }
 
@@ -65,23 +72,23 @@ geticon(){
 
   if [[ -f "squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png" ]]; then              #most common place for icons
     cp squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png "$icondir"/"$filename".png
-    echo "[OK] Icon found"
+    echo -e "${OK} Icon found"
   elif [[ $counticon != 0 ]]; then
     cp squashfs-root/*icon.png "$icondir"/"$filename".png
-    echo "[OK] Icon found"
+    echo -e "${OK} Icon found"
   elif [[ $countpng == 1 ]]; then
     cp squashfs-root/*.png "$icondir"/"$filename".png
-    echo "[OK] Icon found"
+    echo -e "${OK} Icon found"
   elif [[ $countsvg == 1 ]]; then
     cp squashfs-root/*.svg "$icondir"/"$filename".png
-    echo "[OK] Icon found"
+    echo -e "${OK} Icon found"
   else
     cd squashfs-root
-    read -n1 -p "[WARN] Icon not found: do you want to manually select it? [y/N]" select
+    read -n1 -p "Icon not found: do you want to manually select it? [y/N]" select
     echo ""           #empty line
     case $select in
       y|Y) icon=$(fzf); cp "$icon" "$icondir"/"$filename".png; echo "[OK] Icon selected";;
-      *) echo "[WARN] Missing icon";;
+      *) echo -e "{$WARN} Missing icon";;
     esac
   fi
 }
@@ -95,12 +102,12 @@ mkdir -p "$tempdir" "$appdir" "$icondir"
 # AppImage extract
 chmod +x "$file"           #makes the file executable
 cp "$file" "$tempdir"
-cd "$tempdir" || echo "[ERR] Can't find $tempdir"
+cd "$tempdir" || echo -e "${ERR} Can't find $tempdir"
 ./"$filename" --appimage-extract &>/dev/null
-echo "[OK] AppImage extracted"
+echo -e "${OK} AppImage extracted"
 # Icon copy
 mv "$filename" "$appdir"
-echo "[OK] Moved AppImage"
+echo -e "${OK} Moved AppImage"
 geticon
 
 # .desktop file creation
@@ -112,16 +119,15 @@ Exec=$appdir/$filename
 Icon=$icondir/$filename.png
 EOF
 
-echo "[OK] Desktop entry created"
+echo -e "${OK} Desktop entry created"
 
 mv "$desktopentry" "$HOME"/.local/share/applications    #Move the desktop entry
 
-echo "[OK] Moved desktop entry"
+echo -e "${OK} Moved desktop entry"
 # cleanup
-rm -rf "$tempdir"
-echo "[OK] Cache cleared"
+rm -rf "$tempdir" && echo -e "${OK} Cache cleared" || echo -e "${WARN} Couldn't remove cache"
 
-echo "[DONE] AppImage installed"
+echo -e "${DONE} AppImage installed"
 }
 
 while getopts 'iusrl' OPTION; do
