@@ -25,11 +25,7 @@ file=$2
 filename=$(basename "$file")
 filenameonly=$(basename "$file" .AppImage)
 desktopentry="$filenameonly.desktop"
-if [[ ! -z "$XDG_CACHE_HOME" ]]; then
-  tempdir="$XDG_CACHE_HOME/appim"
-else
-  tempdir="$HOME/.cache"
-fi
+tempdir="$(mktemp -ut appim.XXXXXX)"
 appdir="$HOME/Applications"
 icondir="$HOME/.local/share/icons"
 
