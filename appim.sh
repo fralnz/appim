@@ -30,7 +30,7 @@ appdir="$HOME/Applications"
 icondir="$HOME/.local/share/icons"
 
 checkappimage(){
-  if [[ $file == *.AppImage || $file == *.appimage ]]    #checks if the file is an AppImage
+  if [[ $file == ?*.AppImage || $file == ?*.appimage ]]    #checks if the file is an AppImage
   then
     echo -e "${OK} AppImage recognized"
   else
