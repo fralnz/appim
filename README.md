@@ -33,7 +33,7 @@ appim -i balenaEtcher-1.13.1-x64.AppImage
 will install Balena Etcher under the name `balenaEtcher-1.13.1-x64`. To uninstall it:
 
 ```bash
-appim -u balenaEtcher-1.13.1-x64.AppImage
+appim -r balenaEtcher-1.13.1-x64.AppImage
 ```
 
 ## Locations
