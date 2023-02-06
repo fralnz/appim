@@ -23,7 +23,7 @@ DONE="${BWHITE}[${NC}${BBLUE}DONE${NC}${BWHITE}]${NC}"
 # setup variables
 file=$2
 filename=$(basename "$file")
-filenameonly=$(basename "$file" .AppImage)
+filenameonly="${filename%.*}"
 desktopentry="$filenameonly.desktop"
 tempdir="$(mktemp -ut appim.XXXXXX)"
 appdir="$HOME/Applications"
