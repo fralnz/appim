@@ -96,8 +96,8 @@ checkappimage
 mkdir -p "$tempdir" "$appdir" "$icondir"
 
 # AppImage extract
-chmod +x "$file"           #makes the file executable
 cp "$file" "$tempdir"
+chmod +x "$tempdir/$filename"           #makes the file executable
 cd "$tempdir" || echo -e "${ERR} Can't find $tempdir"
 ./"$filename" --appimage-extract &>/dev/null
 echo -e "${OK} AppImage extracted"
