@@ -1,5 +1,5 @@
 #!/bin/bash
-# Made by: WalkingGarbage (https://github.com/WalkingGarbage/)
+# Made by: Francesco Lanza (https://github.com/fralnz/)
 # Any feedback is appreciated
 
 if [[ $1 != -* ]]
